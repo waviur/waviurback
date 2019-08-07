@@ -14,6 +14,7 @@ namespace WebApplication1.Controllers
     public class member
     {
         public string name;
+        public int ID;
         public string position;
         public contacts contacts;
         public string photo;
@@ -24,16 +25,15 @@ namespace WebApplication1.Controllers
         public string mail;
     }
 
+
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ValuesController : ApiController
     {
-        // GET api/values
-        public IEnumerable<member> Get()
-        {
-            List<member> lst = new List<member>() {
+        static List<member> lst = new List<member>() {
                 new member()
                 {
                     name = "Землянова Кристина",
+                    ID = 0,
                     position = "Скрам-мастер",
                     photo = "землякова.png",
                     contacts = new contacts()
@@ -45,8 +45,9 @@ namespace WebApplication1.Controllers
                 new member()
                 {
                      name = "Федорова Ксения",
-                    position = "Продуктолог",
-                    photo = "федорова.png",
+                     ID = 1,
+                     position = "Продуктолог",
+                     photo = "федорова.png",
                     contacts = new contacts()
                     {
                         mail = "fedorova@moedelo.org",
@@ -56,6 +57,7 @@ namespace WebApplication1.Controllers
                 new member()
                 {
                      name = "Козлов Роман",
+                     ID = 2,
                     position = "Разработчик",
                     photo = "козлов.png",
                     contacts = new contacts()
@@ -67,6 +69,7 @@ namespace WebApplication1.Controllers
                  new member()
                 {
                      name = "Постников Максим",
+                     ID = 3,
                     position = "Разработчик",
                     photo = "постников.png",
                     contacts = new contacts()
@@ -78,6 +81,8 @@ namespace WebApplication1.Controllers
                      new member()
                 {
                      name = "Федосеев Николай",
+                     ID = 4
+                         ,
                     position = "Разработчик",
                     photo = "федосеев.png",
                     contacts = new contacts()
@@ -89,6 +94,7 @@ namespace WebApplication1.Controllers
                       new member()
                 {
                      name = "Лебедев Александр",
+                     ID = 5,
                     position = "Разработчик",
                     photo = "лебедев а.png",
                     contacts = new contacts()
@@ -97,17 +103,17 @@ namespace WebApplication1.Controllers
                         skype = "imofka"
                     }
                 },
-
-
         };
-
-        return lst;
+        // GET api/values
+        public IEnumerable<member> Get()
+        {
+            return lst;
         }
 
         // GET api/values/5
-        public string Get(int id)
+        public member Get(int id)
         {
-            return "value";
+            return lst.First(elem => elem.ID == id);
         }
 
         // POST api/values
@@ -123,6 +129,8 @@ namespace WebApplication1.Controllers
         // DELETE api/values/5
         public void Delete(int id)
         {
+            var elemfordelete = lst.First(elem => elem.ID == id);
+            lst.Remove(elemfordelete);
         }
     }
 }
