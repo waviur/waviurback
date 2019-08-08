@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.Results;
@@ -19,6 +20,15 @@ namespace WebApplication1.Controllers
         public contacts contacts;
         public string photo;
     }
+    public class memberget
+    {
+        public string lastname;
+        public string position;
+        public string skype;
+        public string mail;
+        
+
+    }
     public class contacts
     {
         public string skype;
@@ -33,7 +43,7 @@ namespace WebApplication1.Controllers
                 new member()
                 {
                     name = "Землянова Кристина",
-                    ID = 0,
+                    ID = 1,
                     position = "Скрам-мастер",
                     photo = "землякова.png",
                     contacts = new contacts()
@@ -45,7 +55,7 @@ namespace WebApplication1.Controllers
                 new member()
                 {
                      name = "Федорова Ксения",
-                     ID = 1,
+                     ID = 2,
                      position = "Продуктолог",
                      photo = "федорова.png",
                     contacts = new contacts()
@@ -57,7 +67,7 @@ namespace WebApplication1.Controllers
                 new member()
                 {
                      name = "Козлов Роман",
-                     ID = 2,
+                     ID = 3,
                     position = "Разработчик",
                     photo = "козлов.png",
                     contacts = new contacts()
@@ -69,7 +79,7 @@ namespace WebApplication1.Controllers
                  new member()
                 {
                      name = "Постников Максим",
-                     ID = 3,
+                     ID = 4,
                     position = "Разработчик",
                     photo = "постников.png",
                     contacts = new contacts()
@@ -81,8 +91,7 @@ namespace WebApplication1.Controllers
                      new member()
                 {
                      name = "Федосеев Николай",
-                     ID = 4
-                         ,
+                     ID = 5,
                     position = "Разработчик",
                     photo = "федосеев.png",
                     contacts = new contacts()
@@ -94,7 +103,7 @@ namespace WebApplication1.Controllers
                       new member()
                 {
                      name = "Лебедев Александр",
-                     ID = 5,
+                     ID = 6,
                     position = "Разработчик",
                     photo = "лебедев а.png",
                     contacts = new contacts()
@@ -117,13 +126,25 @@ namespace WebApplication1.Controllers
         }
 
         // POST api/values
-        public void Post([FromBody]string value)
-        {
+        public void Post([FromBody]memberget value)
+        {   
+            
+            var elemforadd = new member();
+            var elemforcont = new contacts();
+            elemforadd.ID = lst.Max(elem => elem.ID + 1);
+
+            elemforadd.name = HttpContext.Current.Request.Form["lastname"];
+            elemforadd.position = HttpContext.Current.Request.Form["position"];
+            elemforadd.contacts = elemforcont;
+            elemforcont.skype = HttpContext.Current.Request.Form["skype"];
+            elemforcont.mail = HttpContext.Current.Request.Form["mail"];
+            lst.Add(elemforadd);
         }
 
         // PUT api/values/5
         public void Put(int id, [FromBody]string value)
         {
+            
         }
 
         // DELETE api/values/5
