@@ -133,18 +133,22 @@ namespace WebApplication1.Controllers
             var elemforcont = new contacts();
             elemforadd.ID = lst.Max(elem => elem.ID + 1);
 
-            elemforadd.name = HttpContext.Current.Request.Form["lastname"];
-            elemforadd.position = HttpContext.Current.Request.Form["position"];
+            elemforadd.name =   value.lastname;
+            elemforadd.position = value.position;
             elemforadd.contacts = elemforcont;
-            elemforcont.skype = HttpContext.Current.Request.Form["skype"];
-            elemforcont.mail = HttpContext.Current.Request.Form["mail"];
+            elemforcont.skype = value.skype;
+            elemforcont.mail = value.mail;
             lst.Add(elemforadd);
         }
 
         // PUT api/values/5
-        public void Put(int id, [FromBody]string value)
+        public void Put(int id, [FromBody]memberget value)
         {
-            
+            var elemforuploads= lst.First(elem => elem.ID == id);
+
+
+
+
         }
 
         // DELETE api/values/5
