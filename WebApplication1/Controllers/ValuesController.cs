@@ -144,8 +144,13 @@ namespace WebApplication1.Controllers
         // PUT api/values/5
         public void Put(int id, [FromBody]memberget value)
         {
-            var elemforuploads= lst.First(elem => elem.ID == id);
-
+            var elemforuploads = lst.First(elem => elem.ID == id);
+            var elemforcont = new contacts();
+            elemforuploads.name = value.lastname;
+            elemforuploads.position = value.position;
+            elemforuploads.contacts = elemforcont;
+            elemforcont.mail = value.mail;
+            elemforcont.skype = value.skype;
 
 
 
