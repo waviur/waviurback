@@ -144,13 +144,33 @@ namespace WebApplication1.Controllers
         // PUT api/values/5
         public void Put(int id, [FromBody]memberget value)
         {
-            var elemforuploads = lst.First(elem => elem.ID == id);
+            var elemforuploads = new member();
             var elemforcont = new contacts();
-            elemforuploads.name = value.lastname;
-            elemforuploads.position = value.position;
+            var elemlast = lst.First(elem => elem.ID == id);
+            elemforuploads.ID = elemlast.ID;
+            if (string.IsNullOrWhiteSpace(value.lastname))
+            {
+                elemforuploads.name = elemlast.name;
+            }
+            else
+            {
+                elemforuploads.name = value.lastname;
+            }
+
+            if (string.IsNullOrWhiteSpace(value.position))
+            {
+                elemforuploads.position = elemlast.position;
+            }
+            else
+            {
+                elemforuploads.position = value.position;
+            }
             elemforuploads.contacts = elemforcont;
+
             elemforcont.mail = value.mail;
             elemforcont.skype = value.skype;
+            lst.Remove(elemlast);
+                lst.Add(elemforuploads);
 
 
 
