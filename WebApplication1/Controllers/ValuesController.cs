@@ -16,6 +16,7 @@ namespace WebApplication1.Controllers
     {
         public string name;
         public int ID;
+        public string tag;
         public string position;
         public contacts contacts;
         public string photo;
@@ -24,6 +25,7 @@ namespace WebApplication1.Controllers
     {
         public string lastname;
         public string position;
+        public string tag;
         public string skype;
         public string mail;
         
@@ -44,6 +46,7 @@ namespace WebApplication1.Controllers
                 {
                     name = "Землянова Кристина",
                     ID = 1,
+                    tag = "Мастер",
                     position = "Скрам-мастер",
                     photo = "землякова.png",
                     contacts = new contacts()
@@ -56,6 +59,7 @@ namespace WebApplication1.Controllers
                 {
                      name = "Федорова Ксения",
                      ID = 2,
+                     tag = "Аналитика",
                      position = "Продуктолог",
                      photo = "федорова.png",
                     contacts = new contacts()
@@ -68,6 +72,7 @@ namespace WebApplication1.Controllers
                 {
                      name = "Козлов Роман",
                      ID = 3,
+                     tag = "Backend разработка(C#)",
                     position = "Разработчик",
                     photo = "козлов.png",
                     contacts = new contacts()
@@ -80,6 +85,7 @@ namespace WebApplication1.Controllers
                 {
                      name = "Постников Максим",
                      ID = 4,
+                     tag = "Frontend разработка(JS)",
                     position = "Разработчик",
                     photo = "постников.png",
                     contacts = new contacts()
@@ -92,6 +98,7 @@ namespace WebApplication1.Controllers
                 {
                      name = "Федосеев Николай",
                      ID = 5,
+                     tag = "Frontend разработка(JS)",
                     position = "Разработчик",
                     photo = "федосеев.png",
                     contacts = new contacts()
@@ -105,6 +112,7 @@ namespace WebApplication1.Controllers
                      name = "Лебедев Александр",
                      ID = 6,
                     position = "Разработчик",
+                    tag = "Backend разработка(C#)",
                     photo = "лебедев а.png",
                     contacts = new contacts()
                     {
