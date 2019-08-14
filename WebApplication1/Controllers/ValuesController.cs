@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
 using System.Web.Http.Results;
-using System.Web.Mvc;
+using System.IO;
 
 namespace WebApplication1.Controllers
 {
@@ -28,6 +28,7 @@ namespace WebApplication1.Controllers
         public string tag;
         public string skype;
         public string mail;
+        public string photo;
         
 
     }
@@ -127,6 +128,21 @@ namespace WebApplication1.Controllers
             return lst;
         }
 
+        [Route("api/values/uploadfile/{id:int}")]
+        [HttpPost]
+        public string uploadfile(int id)
+        {
+            var file = HttpContext.Current.Request.Files["photo"];
+            var path = AppDomain.CurrentDomain.BaseDirectory + "pics\\";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            
+            file.SaveAs(path+$"{id}.png");
+            return "/pics/"+file.FileName;
+        }
+
         // GET api/values/5
         public member Get(int id)
         {
@@ -140,14 +156,14 @@ namespace WebApplication1.Controllers
             var elemforadd = new member();
             var elemforcont = new contacts();
             elemforadd.ID = lst.Max(elem => elem.ID + 1);
-
+            elemforadd.photo = value.photo;
             elemforadd.name =   value.lastname;
+            elemforadd.tag = value.tag;
             elemforadd.position = value.position;
             elemforadd.contacts = elemforcont;
             elemforcont.skype = value.skype;
             elemforcont.mail = value.mail;
             lst.Add(elemforadd);
-
             return elemforadd.ID;
         }
 
@@ -165,6 +181,14 @@ namespace WebApplication1.Controllers
             else
             {
                 elemforuploads.name = value.lastname;
+            }
+            if (string.IsNullOrEmpty(value.tag))
+            {
+                elemforuploads.tag = elemlast.tag;
+            }
+            else
+            {
+                elemforuploads.tag = value.tag;
             }
 
             if (string.IsNullOrEmpty(value.position))
