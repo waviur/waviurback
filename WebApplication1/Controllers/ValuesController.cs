@@ -1,14 +1,11 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Cors;
-using System.Web.Http.Results;
 using System.IO;
+using System.Data.SqlClient;
 
 namespace WebApplication1.Controllers
 {
@@ -42,6 +39,8 @@ namespace WebApplication1.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ValuesController : ApiController
     {
+        string connectionString = @"Data Source=CHERNOV\SQL2016;Initial Catalog=members;Integrated Security=True";
+
         static List<member> lst = new List<member>() {
                 new member()
                 {
@@ -125,7 +124,33 @@ namespace WebApplication1.Controllers
         // GET api/values
         public IEnumerable<member> Get()
         {
-            return lst;
+            List<member> sqlLst = new List<member>();
+            var connection = new SqlConnection(connectionString);
+            connection.Open();
+
+            var sqlCommand = new SqlCommand("select * from members", connection);
+            var reader = sqlCommand.ExecuteReader();
+            while (reader.Read())
+            {
+                var name = reader.GetValue(0).ToString();
+                var position = reader.GetValue(1).ToString();
+                var tag = reader.GetValue(2).ToString();
+                var photo = reader.GetValue(4).ToString();
+                var ID = Convert.ToInt32(reader.GetValue(3));
+
+                var member = new member
+                {
+                    name = name,
+                    position = position,
+                    tag = tag,
+                    photo = photo,
+                    ID = ID
+                };
+
+                sqlLst.Add(member);
+            }
+            connection.Close();
+            return sqlLst;
         }
 
         [Route("api/values/uploadfile/{id:int}")]
