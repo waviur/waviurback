@@ -40,87 +40,6 @@ namespace WebApplication1.Controllers
     public class ValuesController : ApiController
     {
         string connectionString = @"Data Source=CHERNOV\SQL2016;Initial Catalog=members;Integrated Security=True";
-
-        static List<member> lst = new List<member>() {
-                new member()
-                {
-                    name = "Землянова Кристина",
-                    ID = 1,
-                    tag = "QA",
-                    position = "Скрам-мастер",
-                    photo = "землякова.png",
-                    contacts = new contacts()
-                    {
-                        mail = "zemlyanova@moedelo.org",
-                        skype = "zemlyanova92"
-                    }
-                },
-                new member()
-                {
-                     name = "Федорова Ксения",
-                     ID = 2,
-                     tag = "PO",
-                     position = "Продуктолог",
-                     photo = "федорова.png",
-                    contacts = new contacts()
-                    {
-                        mail = "fedorova@moedelo.org",
-                        skype = "kseniay199228"
-                    }
-                },
-                new member()
-                {
-                     name = "Козлов Роман",
-                     ID = 3,
-                     tag = ".NetCore   MYSQL",
-                    position = "Разработчик",
-                    photo = "козлов.png",
-                    contacts = new contacts()
-                    {
-                        mail = "kozlov@moedelo.org",
-                        skype = "from_kuzneburg"
-                    }
-                },
-                 new member()
-                {
-                     name = "Постников Максим",
-                     ID = 4,
-                     tag = "JS  .NetCore  MYSQl" ,
-                    position = "Разработчик",
-                    photo = "постников.png",
-                    contacts = new contacts()
-                    {
-                        mail = "postnikov@moedelo.org",
-                        skype = "webert1990"
-                    }
-                },
-                     new member()
-                {
-                     name = "Федосеев Николай",
-                     ID = 5,
-                     tag = "JS .NETCore MYSQL",
-                    position = "Разработчик",
-                    photo = "федосеев.png",
-                    contacts = new contacts()
-                    {
-                        mail = "n.fedoseev@moedelo.org",
-                        skype = "xneek"
-                    }
-                },
-                      new member()
-                {
-                     name = "Лебедев Александр",
-                     ID = 6,
-                    position = "Разработчик",
-                    tag = ".NetCore MySQL",
-                    photo = "лебедев а.png",
-                    contacts = new contacts()
-                    {
-                        mail = "a.lebedev@moedelo.org",
-                        skype = "imofka"
-                    }
-                },
-        };
         // GET api/values
         public IEnumerable<member> Get()
         {
@@ -128,7 +47,7 @@ namespace WebApplication1.Controllers
             var connection = new SqlConnection(connectionString);
             connection.Open();
 
-            var sqlCommand = new SqlCommand("select * from members", connection);
+            var sqlCommand = new SqlCommand("select * from members join contacts on members.ID = contacts.memberID", connection);
             var reader = sqlCommand.ExecuteReader();
             while (reader.Read())
             {
@@ -137,6 +56,8 @@ namespace WebApplication1.Controllers
                 var tag = reader.GetValue(2).ToString();
                 var photo = reader.GetValue(4).ToString();
                 var ID = Convert.ToInt32(reader.GetValue(3));
+                var mail = reader.GetValue(5).ToString();
+                var skype = reader.GetValue(6).ToString();
 
                 var member = new member
                 {
@@ -144,7 +65,13 @@ namespace WebApplication1.Controllers
                     position = position,
                     tag = tag,
                     photo = photo,
-                    ID = ID
+                    ID = ID,
+                    contacts = new contacts
+                    {
+                        mail = mail,
+                        skype = skype
+                    }
+
                 };
 
                 sqlLst.Add(member);
@@ -165,43 +92,74 @@ namespace WebApplication1.Controllers
             }
             
             file.SaveAs(path+$"{id}.png");
+
             return "/pics/"+file.FileName;
         }
+
+        private member getmemberbyid(int id)
+        {
+            var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var sqlCommand = new SqlCommand($"select * from members join contacts on members.ID = contacts.memberID where members.Id = {id} ", connection);
+            var reader = sqlCommand.ExecuteReader();
+            var member = new member();
+            while (reader.Read())
+            {
+                member.name = reader.GetValue(0).ToString();
+                member.position = reader.GetValue(1).ToString();
+                member.tag = reader.GetValue(2).ToString();
+                member.photo = reader.GetValue(4).ToString();
+                member.ID = Convert.ToInt32(reader.GetValue(3));
+                member.contacts = new contacts
+                {
+                    mail = reader.GetValue(5).ToString(),
+                    skype = reader.GetValue(6).ToString()
+                };
+            }
+            connection.Close();
+            return member;
+
+        }
+
+
+
+
 
         // GET api/values/5
         public member Get(int id)
         {
-            return lst.First(elem => elem.ID == id);
+            return getmemberbyid(id);
+
         }
 
         // POST api/values
         public int Post(memberget value)
-        {   
-            
-            var elemforadd = new member();
-            var elemforcont = new contacts();
-            elemforadd.ID = lst.Max(elem => elem.ID + 1);
-            elemforadd.photo = value.photo;
-            elemforadd.name =   value.lastname;
-            elemforadd.tag = value.tag;
-            elemforadd.position = value.position;
-            elemforadd.contacts = elemforcont;
-            elemforcont.skype = value.skype;
-            elemforcont.mail = value.mail;
-            lst.Add(elemforadd);
-            return elemforadd.ID;
+        {
+            var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var sqlCommand = new SqlCommand($"insert into members (name,position,tag) values ('{value.lastname}','{value.position}','{value.tag}'); select scope_identity()", connection);
+            var createdid = sqlCommand.ExecuteScalar();
+            sqlCommand.CommandText = $"insert into contacts (mail,skype,memberID) values ('{value.mail}','{value.skype}',{Convert.ToInt32(createdid)})";
+            sqlCommand.ExecuteNonQuery();
+            connection.Close();
+            return Convert.ToInt32(createdid);
         }
 
         // PUT api/values/5
         public int Put(int id, memberget value)
         {
+            var connection = new SqlConnection(connectionString);
+            connection.Open();
+
+            var oldMember = getmemberbyid(id);
+
             var elemforuploads = new member();
             var elemforcont = new contacts();
-            var elemlast = lst.First(elem => elem.ID == id);
-            elemforuploads.ID = elemlast.ID;
+            
+            elemforuploads.ID = oldMember.ID;
             if (string.IsNullOrEmpty(value.lastname))
             {
-                elemforuploads.name = elemlast.name;
+                elemforuploads.name = oldMember.name;
             }
             else
             {
@@ -209,7 +167,7 @@ namespace WebApplication1.Controllers
             }
             if (string.IsNullOrEmpty(value.tag))
             {
-                elemforuploads.tag = elemlast.tag;
+                elemforuploads.tag = oldMember.tag;
             }
             else
             {
@@ -218,7 +176,7 @@ namespace WebApplication1.Controllers
 
             if (string.IsNullOrEmpty(value.position))
             {
-                elemforuploads.position = elemlast.position;
+                elemforuploads.position = oldMember.position;
             }
             else
             {
@@ -228,7 +186,7 @@ namespace WebApplication1.Controllers
 
             if (string.IsNullOrEmpty(value.mail))
             {
-                elemforcont.mail = elemlast.contacts.mail;
+                elemforcont.mail = oldMember.contacts.mail;
             }
             else
             {
@@ -237,25 +195,32 @@ namespace WebApplication1.Controllers
 
             if (string.IsNullOrEmpty(value.skype))
             {
-                elemforcont.skype = elemlast.contacts.skype;
+                elemforcont.skype = oldMember.contacts.skype;
             }
             else
             {
                 elemforcont.skype = value.skype;
             }
-            lst.Remove(elemlast);
-            lst.Add(elemforuploads);
+            var sqlcommand = new SqlCommand($"update members set name = '{elemforuploads.name}', position = '{elemforuploads.position}', tag = '{elemforuploads.tag}' where ID = {elemforuploads.ID}", connection);
+            sqlcommand.ExecuteNonQuery();
+            sqlcommand.CommandText = $"update contacts set mail = '{elemforcont.mail}', skype = '{elemforcont.skype}' where memberID = {id}";
+            sqlcommand.ExecuteNonQuery();
+            connection.Close();
             return elemforuploads.ID;
-
-
-
         }
-
         // DELETE api/values/5
         public void Delete(int id)
         {
-            var elemfordelete = lst.First(elem => elem.ID == id);
-            lst.Remove(elemfordelete);
+            var connection = new SqlConnection(connectionString);
+            connection.Open();
+
+            var sqlCommand = new SqlCommand ($"delete contscts where memberID = {id}", connection);
+            sqlCommand.ExecuteNonQuery();
+            sqlCommand.CommandText = $"delete members where ID = {id}";
+            sqlCommand.ExecuteNonQuery();
+            connection.Close();
+        
+             
         }
     }
 }
