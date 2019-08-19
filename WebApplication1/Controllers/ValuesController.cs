@@ -39,7 +39,7 @@ namespace WebApplication1.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ValuesController : ApiController
     {
-        string connectionString = @"Data Source=CHERNOV\SQL2016;Initial Catalog=members;Integrated Security=True";
+        string connectionString = @"workstation id=waviurback.mssql.somee.com;packet size=4096;user id=Waviur_SQLLogin_1;pwd=jymaverp6r;data source=waviurback.mssql.somee.com;persist security info=False;initial catalog=waviurback";
         // GET api/values
         public IEnumerable<member> Get()
         {
@@ -90,8 +90,17 @@ namespace WebApplication1.Controllers
             {
                 Directory.CreateDirectory(path);
             }
-            
-            file.SaveAs(path+$"{id}.png");
+            var filestring = new string (file.FileName.Reverse().ToArray());
+            var numberelements = filestring.IndexOf('.');
+            var formatphoto = new string(filestring.Substring(0, numberelements).Reverse().ToArray());
+
+
+            file.SaveAs(path+$"{id}.{formatphoto}");
+            var connection = new SqlConnection(connectionString);
+            connection.Open();
+            var sqlCommand = new SqlCommand($"update members set photo = '{id}.{formatphoto}' where ID = {id}", connection);
+            sqlCommand.ExecuteNonQuery();
+            connection.Close();
 
             return "/pics/"+file.FileName;
         }
@@ -213,14 +222,18 @@ namespace WebApplication1.Controllers
         {
             var connection = new SqlConnection(connectionString);
             connection.Open();
+            var OldMember = getmemberbyid(id);
 
-            var sqlCommand = new SqlCommand ($"delete contscts where memberID = {id}", connection);
+            var sqlCommand = new SqlCommand ($"delete contacts where memberID = {id}", connection);
             sqlCommand.ExecuteNonQuery();
             sqlCommand.CommandText = $"delete members where ID = {id}";
             sqlCommand.ExecuteNonQuery();
             connection.Close();
-        
-             
+            var path = AppDomain.CurrentDomain.BaseDirectory + "pics\\";
+            if (File.Exists(path + $"{OldMember.photo}"))
+            {
+                System.IO.File.Delete(path + $"{OldMember.photo}");
+            }
         }
     }
 }
