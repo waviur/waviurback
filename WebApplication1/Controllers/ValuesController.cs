@@ -6,6 +6,7 @@ using System.Web.Http;
 using System.Web.Http.Cors;
 using System.IO;
 using System.Data.SqlClient;
+using System.Web.Configuration;
 
 namespace WebApplication1.Controllers
 {
@@ -39,7 +40,13 @@ namespace WebApplication1.Controllers
     [EnableCors(origins: "*", headers: "*", methods: "*")]
     public class ValuesController : ApiController
     {
-        string connectionString = @"workstation id=waviurback.mssql.somee.com;packet size=4096;user id=Waviur_SQLLogin_1;pwd=jymaverp6r;data source=waviurback.mssql.somee.com;persist security info=False;initial catalog=waviurback";
+        string connectionString = "";
+
+        public ValuesController()
+        {
+            connectionString = WebConfigurationManager.ConnectionStrings["memberdata"].ConnectionString;
+        }
+
         // GET api/values
         public IEnumerable<member> Get()
         {
