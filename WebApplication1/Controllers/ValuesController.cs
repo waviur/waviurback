@@ -97,19 +97,33 @@ namespace WebApplication1.Controllers
             {
                 Directory.CreateDirectory(path);
             }
-            var filestring = new string (file.FileName.Reverse().ToArray());
+            var filestring = new string(file.FileName.Reverse().ToArray());
             var numberelements = filestring.IndexOf('.');
             var formatphoto = new string(filestring.Substring(0, numberelements).Reverse().ToArray());
 
 
-            file.SaveAs(path+$"{id}.{formatphoto}");
+            file.SaveAs(path + $"{id}.{formatphoto}");
             var connection = new SqlConnection(connectionString);
             connection.Open();
             var sqlCommand = new SqlCommand($"update members set photo = '{id}.{formatphoto}' where ID = {id}", connection);
             sqlCommand.ExecuteNonQuery();
             connection.Close();
 
-            return "/pics/"+file.FileName;
+            return "/pics/" + file.FileName;
+        }
+        [Route("api/values/deletefile/{id:int}")]
+        [HttpPost]
+        public void deletefile(int id)
+        {
+            
+            var connection = new SqlConnection(connectionString);
+            var path = AppDomain.CurrentDomain.BaseDirectory + "pics\\";
+            connection.Open();
+            var worker = getmemberbyid(id);
+            System.IO.File.Delete(path + $"{worker.photo}");
+            var sqlCommand = new SqlCommand($"update members set photo = '' where ID = {id}", connection);
+            sqlCommand.ExecuteNonQuery();
+            connection.Close();
         }
 
         private member getmemberbyid(int id)
@@ -136,10 +150,6 @@ namespace WebApplication1.Controllers
             return member;
 
         }
-
-
-
-
 
         // GET api/values/5
         public member Get(int id)
