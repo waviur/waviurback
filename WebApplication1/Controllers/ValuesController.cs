@@ -26,7 +26,6 @@ namespace WebApplication1.Controllers
         public string tag;
         public string skype;
         public string mail;
-        public string photo;
         
 
     }
